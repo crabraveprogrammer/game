@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>snake</title>
+</head>
+<body onkeydown="push(event)">
+<canvas onclick="retry()" style="border: 3px solid gray" id="gamearea" width="900" height="600"></canvas>
+<script>
+var backcolor = "white";
+var yAcceleration = 0;
+var speedfast = 1;
+var invisend = 0;
+var wait = 50;
+var color = ["blue"];
+var ended = 0;
+var canvas = document.getElementById("gamearea");
+var ctx = canvas.getContext("2d");
+var x = [450];
+var y = [300];
+var obstx = Math.random() * 800 + 50;
+var obsty = Math.random() * 500 + 50;
+var changex = 0;
+var changey = 0;
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, 900, 600);
+ctx.fillStyle = "black";
+ctx.fillRect(x[0], y[0], 50, 50);
+play();
+function retry() {
+if (ended == 1) {
+speedfast = 1;
+backcolor = "white";
+ wait = 50;
+ color = ["blue"];
+ ended = 0;
+ canvas = document.getElementById("gamearea");
+ ctx = canvas.getContext("2d");
+ x = [450];
+ y = [300];
+ obstx = Math.random() * 800 + 50;
+ obsty = Math.random() * 500 + 50;
+changex = 0;
+changey = 0;
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, 900, 600);
+ctx.fillStyle = "black";
+ctx.fillRect(x[0], y[0], 50, 50);
+ctx.fillStyle = "black";
+ctx.fillRect(x[x.length], y[y.length], 50, 50);
+play();
+}
+}
+function play() {
+obsty += yAcceleration;
+if (y[0] < 2100) {
+setTimeout(play, wait*speedfast);
+}
+if (ended == 1) {
+changey+= .3;
+}
+if (ended == 0) {
+if (x[0] > 900) {
+gameover();
+}
+if (x[0] < 0) {
+gameover();
+}
+if (y[0] > 600) {
+gameover();
+}
+if (y[0] < 0) {
+gameover();
+}
+}
+ctx.fillStyle = backcolor;
+ctx.fillRect(0, 0, 900, 600);
+ctx.fillStyle = "blue"; ;
+ctx.fillRect(x[0], y[0], 50, 50);
+ctx.fillStyle = "purple";
+ctx.fillRect(x[x.length-1], y[y.length-1], 50, 50);
+for (i=1; i<x.length; i++) {
+if (invisend == 0) {
+ctx.fillStyle = color[i%color.length]; ;
+ctx.fillRect(x[i], y[i], 50, 50);
+}
+}
+ctx.fillStyle = "red";
+ctx.fillRect(obstx, obsty, 50, 50);
+ctx.font="60px Comic Sans MS";
+ctx.textAlign = "center";
+ctx.fillText((x.length - 1) / 5, 450, 300);
+if (y[0] > 2000) {
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, 900, 600);
+ctx.font="30px Comic Sans MS";
+ctx.fillStyle = "red";
+ctx.textAlign = "center";
+ctx.fillText("Game Over...", 450, 280);
+ctx.fillText("you scored " + (x.length - 1) / 5, 450, 310);
+ctx.fillText("[press enter or click the game to continue]", 450, 340);
+}
+if (ended == 0) {
+for (i=x.length-1; i>0; i-= 1) {
+x[i] = x[i-1];
+y[i] = y[i-1];
+}
+}
+if (ended  == 1) {
+for (i=1; i<x.length; i++) {
+y[i] += Math.random() * changey;
+}
+}
+x[0] += changex;
+y[0] += changey;
+//console.log(x.length);
+if (ended == 0) {
+for (i=5; i<x.length; i++) {
+if ((x[i] - x[0])*(x[i] - x[0]) + ((y[i] - y[0])*(y[i] - y[0])) < 1000) {
+gameover();
+}
+}
+}
+if ((obstx - x[0])*(obstx - x[0]) + ((obsty - y[0])*(obsty - y[0])) < 1000) {
+increase();
+obstx = Math.random() * 800 + 50;
+obsty = Math.random() * 500 + 50;
+} 
+}
+function increase() {
+if (x.length == 151) {
+backcolor = "black";
+}
+wait--;
+invisend = 0;
+speedfast = 1;
+yAcceleration = 0;
+if (Math.random() > .9) {
+invisend = 1;
+}
+if (Math.random() > .9) {
+yAcceleration = 1;
+}
+if (Math.random() > .9) {
+speedfast = 15 / wait;
+}
+for (i=0; i<5; i++) {
+x.push(-200);
+y.push(-200);
+}
+if (x.length == 101) {
+color = ["red", "blue", "purple", "green", "orange", "cyan"];
+}
+}
+function push(event) {
+if (ended == 0) {
+if (event.key == "ArrowLeft" && changex !== 10) {
+changex = -10;
+changey = 0;
+}
+if (event.key == "ArrowRight" && changex !== -10) {
+changex = 10;
+changey = 0;
+}
+if (event.key == "ArrowUp" && changey !== 10) {
+changex = 0;
+changey = -10;
+}
+if (event.key == "ArrowDown" && changey !== -10) {
+changex = 0;
+changey = 10;
+}
+}
+if (event.key == "Enter") {
+retry();
+}
+}
+function gameover() {
+changex = 0;
+changey = -10;
+ended = 1;
+wait = 20;
+invisend = 0;
+}
+</script>
+</body>
+</html>
